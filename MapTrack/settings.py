@@ -17,8 +17,8 @@ DATABASES = {
         'NAME': 'track',                      # Or path to database file if using sqlite3.
         'USER': 'postgres',                      # Not used with sqlite3.
         'PASSWORD': 'postgres',                  # Not used with sqlite3.
-        'HOST': '41.226.27.218',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5434',                     # Set to empty string for default. Not used with sqlite3.
+        #'HOST': '41.226.27.218',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '5432',                     # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    'django.contrib.gis',
     'geo'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
