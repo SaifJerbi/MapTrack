@@ -1,0 +1,131 @@
+{% extends "index.html" %}
+
+
+
+
+
+{% block loginform %}
+{% if user.is_authenticated %}
+<p><a href="/logout/">Logout</a></p>			
+{% else %}
+			<form action="" method="post" class="form-inline">
+{% csrf_token %}
+{% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
+		{% if form.societe.errors %}<p class="error">{{ form.societe.errors }}</p>{% endif %}
+        <label for="societe"{% if form.societe.errors %} class="error"{% endif %}>Societe:</label>        {{ form.societe }}
+        {% if form.username.errors %}<p class="error">{{ form.username.errors }}</p>{% endif %}
+        <label for="username"{% if form.username.errors %} class="error"{% endif %}>Username:</label>        {{ form.username }}
+        {% if form.password.errors %}<p class="error">{{ form.password.errors }}</p>{% endif %}
+        <label for="password"{% if form.password.errors %} class="error"{% endif %}>Password:</label>        {{ form.password }}
+<input type="submit" alt="register" value="Sign in"/>
+</form>{% endif %}
+{% endblock %}
+
+
+{% block track %}
+{% if user.is_authenticated %}
+<script>
+Ext.Loader.setConfig({enabled: true});
+Ext.Loader.setPath('Ext.ux', '/static/extjs/examples/ux');
+Ext.require([
+    'Ext.window.*',
+    'Ext.ux.GMapPanel'
+]);
+
+Ext.onReady (function () {
+	var sampleData = [{% for waypoint in waypoints %}
+	                  ['{{waypoint.voiture}}','{{waypoint.geo_pos.x}},{{waypoint.geo_pos.y}}','{{waypoint.dateheure}}','{{waypoint.vitesse}}','{{waypoint.angle}}',],
+	                  {% endfor %}
+	              ];
+	               
+	              // create the data store
+	              var store = new Ext.data.SimpleStore({
+	                  fields: [
+	                      
+	                      {name: 'vehicule'},
+	                      {name: 'position'},
+	                      {name: 'dateheure'},
+	                      {name: 'vitesse'},
+	                      {name: 'angle'},
+	                      
+	                  ]
+	              });
+	               
+	              // load data
+	               
+	              store.loadData(sampleData);
+	               
+	              // create the grid
+	              var grid = new Ext.grid.GridPanel({
+	                  store: store,
+	                  columns: [
+	                      
+	                      {header: 'Vehicule', width: 200, dataIndex: 'vehicule'},
+	                      {header: 'Position', width: 200, dataIndex: 'position'},
+	                      {header: 'Date Heure', width: 200, dataIndex: 'dateheure'},
+	                      {header: 'Vitesse', width: 200, dataIndex: 'vitesse'},
+	                      {header: 'Angle', width: 200, dataIndex: 'angle'},
+	                      
+	                  ],
+	                  stripeRows: true,
+	                  height:400,
+	                  width:960,
+	                  title:'Les derniers points'
+	              });
+	               
+	              // render grid to the grid-example element (see p array-grid.html)
+	              grid.render('grid-example');
+
+var mapwin;
+var image = '/static/icones/voiture/voiture_';
+
+// create the window on the first click and reuse on subsequent clicks
+if(mapwin) {
+    mapwin.show();
+} else {
+    mapwin = Ext.create('Ext.window.Window', {
+        autoShow: true,
+        layout: 'fit',
+        title: 'Protec',
+        closeAction: 'hide',
+        width:1340,
+        height:550,
+        border: false,
+        x: 5,
+        y: 90,
+        
+
+        items: {
+            xtype: 'gmappanel',
+            gmapType: 'map',
+            zoomLevel: 2,
+            center: new google.maps.LatLng({{zoom_point}}),
+               
+            
+            
+            markers: [
+			{% for waypoint in waypoints %}
+                {
+	                lat: {{waypoint.geo_pos.y}},
+	                lng: {{waypoint.geo_pos.x}},
+	                title: '{{waypoint.voiture}}',
+	                icon:image+Math.round({{waypoint.angle}}/45)*45+'.png',
+	                listeners: {
+	                    click: function(e){
+	                        Ext.Msg.alert('{{waypoint.voiture}}', '{{waypoint.voiture}}')
+		                    }
+	                }
+            	},
+            {% endfor %}
+            ]
+        }
+    });
+    
+    
+}        
+});
+</script>
+<div id="grid-example"></div>
+{% else %}   
+{% endif %} 
+{% endblock %}

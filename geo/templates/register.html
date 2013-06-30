@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block extrahead %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js" type="text/javascript"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.js" type="text/javascript"></script>
+        
+{% endblock %}
+{% block loginform %}
+<form action="" method="post">
+{% csrf_token %}
+{% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
+<div class="register_div">
+        {% if form.username.errors %}<p class="error">{{ form.username.errors }}</p>{% endif %}
+        <p><label for="username"{% if form.username.errors %} class="error"{% endif %}>Username:</label></p>
+        <p>{{ form.username }}</p>
+</div>
+<div class="register_div">
+        {% if form.email.errors %}<p class="error">{{ form.email.errors }}</p>{% endif %}
+        <p><label for="email"{% if form.email.errors %} class="error"{% endif %}>Email:</label></p>
+        <p>{{ form.email }}</p>
+</div>
+<div class="register_div">
+        {% if form.password.errors %}<p class="error">{{ form.password.errors }}</p>{% endif %}
+        <p><label for="password"{% if form.password.errors %} class="error"{% endif %}>Password:</label></p>
+        <p>{{ form.password }}</p>
+</div>
+<div class="register_div">
+        {% if form.password1.errors %}<p class="error">{{ form.password1.errors }}</p>{% endif %}
+        <p><label for="password1"{% if form.password1.errors %} class="error"{% endif %}>Verify Password:</label></p>
+        <p>{{ form.password1 }}</p>
+</div>
+<div class="register_div">
+        {% if form.adress.errors %}<p class="error">{{ form.adress.errors }}</p>{% endif %}
+        <p><label for="adress"{% if form.adress.errors %} class="error"{% endif %}>adress:</label></p>
+        <p>{{ form.adress }}</p>
+</div>
+<div class="register_div">
+        {% if form.telephone.errors %}<p class="error">{{ form.telephone.errors }}</p>{% endif %}
+        <p><label for="telephone"{% if form.telephone.errors %} class="error"{% endif %}>telephone:</label></p>
+        <p>{{ form.telephone }}</p>
+</div>
+<p><input type="submit" alt="register" /></p>
+</form>
+{% endblock %}
