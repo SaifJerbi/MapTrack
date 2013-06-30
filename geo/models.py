@@ -216,10 +216,9 @@ class UserPro(models.Model):
     user = models.OneToOneField(User,primary_key=True)
     adress = models.CharField(max_length=250)
     telephone = models.CharField(max_length=250)
-    societe = models.ForeignKey(Societe)
+    idsociete = models.BigIntegerField()
     mobiles = models.ManyToManyField(Mobile)
-    class Meta:
-        unique_together = (("user", "societe"),)
+
     
     @classmethod
     def getUserLoged(self, username, pwd):
@@ -227,12 +226,12 @@ class UserPro(models.Model):
         return user
     @classmethod
     def getImportData(self):
-        u = UserPro.objects.raw('''SELECT id_user as user_id, nom_user as adress, pwd_user as telephone FROM connexion ''' )
+        u = UserPro.objects.raw('''SELECT id_user as user_id, nom_user as adress, pwd_user as telephone, id_societe as idsociete FROM connexion ''' )
         #from geo.models import *
         #UserPro.getImportData() 
         
         for i in u:  
-            usrname = i.adress
+            usrname = i.adress+'_'+str(i.idsociete)
             pwd = i.telephone
             x = User.objects.create_user(usrname,'',pwd)         
             

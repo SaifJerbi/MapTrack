@@ -95,6 +95,8 @@ def LoginRequest(request):
                                     #check if View does'nt exist --> create view v_idprovider_idsociete_iduser
                                     if(bool(cursor.rowcount)==False) :
                                         cursor.execute(query_create_view,[id_provider,id_societe[0],id_connexion[0],usr,pwd])    
+                                    
+                                    username+='_'+str(id_societe[0])
                                     userPro = authenticate(username=username, password=password)
                                     if userPro is not None:
                                          login(request, userPro)
