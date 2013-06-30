@@ -1,5 +1,5 @@
 Ext.Loader.setConfig({enabled: true});
-Ext.Loader.setPath('Ext.ux', '../ux');
+Ext.Loader.setPath('Ext.ux', '/static/extjs/exemples/ux');
 Ext.require([
     'Ext.window.*',
     'Ext.ux.GMapPanel'
