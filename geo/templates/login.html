@@ -1,9 +1,5 @@
 {% extends "index.html" %}
 
-
-
-
-
 {% block loginform %}
 {% if user.is_authenticated %}
 <p><a href="/logout/">Logout</a></p>			
@@ -109,7 +105,7 @@ if(mapwin) {
 	                lat: {{waypoint.geo_pos.y}},
 	                lng: {{waypoint.geo_pos.x}},
 	                title: '{{waypoint.voiture}}',
-	                icon:image+Math.round({{waypoint.angle}}/45)*45+'.png',
+	                icon:image+(Math.round({{waypoint.angle}}/45)*45)%360+'.png',
 	                listeners: {
 	                    click: function(e){
 	                        Ext.Msg.alert('{{waypoint.voiture}}', '{{waypoint.voiture}}')
@@ -129,3 +125,9 @@ if(mapwin) {
 {% else %}   
 {% endif %} 
 {% endblock %}
+
+{% block jquery %}
+ 
+{% endblock %}
+
+

@@ -14,6 +14,7 @@ from django.db import connection
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import simplejson as json
 from collections import OrderedDict
+from django.core import serializers
 
 def index(request):
         if request.user.is_authenticated():
@@ -97,11 +98,14 @@ def json_get_latest_waypoint(request):
                     
                     to_json.append(waypoint_dict)
                 
+                root_name = 'waypoints' # or it can be queryset.model._meta.verbose_name_plural 
+                data = '{"total": %s, "%s": %s}' % (to_json.__len__(), root_name, json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)) 
                 
-                
-                items=json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)
-                return HttpResponse(items, content_type='application/json')
-                
+                #js = '{root:%s,count:%s}' % (serializers.serialize('json', to_json, use_natural_keys=True), to_json.count())
+                return HttpResponse(data, content_type='application/json')
+#                 items=json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)
+#                 return HttpResponse(items, content_type='application/json')
+#                 
                 
                 
 

@@ -1,18 +1,25 @@
-<!DOCTYPE html>
-<html lang="es">
+<!doctype html>
+<html lang="fr">
 <head>
 <title>Protec GPSTracking</title>
 <meta charset="utf-8" />
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 <script type="text/javascript"
 	src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+<script type="text/javascript" src="/static/js/Jquery/jquery.min.1.10.1.js"></script>
+<script type="text/javascript">
+		{% block jquery %}{% endblock %}
+</script>
+<script src="/static/js/Jquery/sidebar/jquery.sidr.js"></script>
+<link rel="stylesheet" href="/static/scss/jquery.sidr.dark.css">
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
 <script type="text/javascript" src="/static/extjs/ext-all-debug.js"></script>
 <script type="text/javascript"	src="/static/extjs/adapter/ext/ext-base.js"></script>
 <link rel="stylesheet" type="text/css"	href="/static/extjs/resources/css/ext-all.css">
 <script src="/static/extjs/examples/ux/GMapPanel.js"></script>
+<script src="/static/loadtest.js"></script>
 <link rel="stylesheet" href="/static/main.css" type="text/css" />
 
 
@@ -130,7 +137,25 @@
 		<p>
 			&copy 2013 <a href="http://www.avl.tn">Protec</a>.
 		</p>
+		<div id="showdata"></div>
 	</footer>
+	<p id="cand"></p>
+<a id="simple-menu" href="#sidr">Toogle menu</a>
+ 
+<div id="sidr">
+  <!-- Your content -->
+  <ul>
+    <li><a href="#">List 1</a></li>
+    <li class="active"><a href="#">List 2</a></li>
+    <li><a href="#">List 3</a></li>
+  </ul>
+</div>
+ 
+<script>
+$(document).ready(function() {
+  $('#simple-menu').sidr();
+});
+</script>
 	<!-- /#contentinfo -->
 
 </body>
