@@ -1,7 +1,7 @@
 
 
 # Create your views here.
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, render, redirect
@@ -11,6 +11,9 @@ from geo.models import *
 from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
 from django.db import connection
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils import simplejson as json
+from collections import OrderedDict
 
 def index(request):
         if request.user.is_authenticated():
@@ -38,7 +41,69 @@ def index(request):
                 ''' user is not submitting the form, show the login form '''
         else:     
                 return HttpResponseRedirect('/login/')
+            
+            
+            
+def json_get_latest_waypoint(request):
+    
+                zoom_point=str(request.session.get('zoom_point'))
+                zoom=str(request.session.get('zoom'))
+                id_provider=str(request.session.get('id_provider'))
+                id_societe=str(request.session.get('id_societe'))
+                id_connexion=str(request.session.get('id_connexion'))
 
+                query_get_data_from_specific_view = 'SELECT * FROM v_'+id_provider+'_'+id_societe+'_'+id_connexion+' a1,'
+                query_get_data_from_specific_view +=' (SELECT voiture, max(dateheure) AS last_date FROM v_1_2_7 GROUP BY v_1_2_7.voiture) a2 '
+                query_get_data_from_specific_view +='WHERE a1.voiture = a2.voiture '
+                query_get_data_from_specific_view +='AND a1.dateheure = a2.last_date'
+                to_json = []
+                
+                
+#                 cursor = connection.cursor()
+#                 cursor.execute(query_get_data_from_specific_view)
+#                 items = cursor.fetchall()
+                
+                items = Waypoint.objects.raw(query_get_data_from_specific_view)
+                
+                for waypoint in items:
+                    #waypoint_dict={}
+                    waypoint_dict = OrderedDict()
+                    waypoint_dict['__class__'] = "Waypoint"
+                    waypoint_dict['id'] = str(waypoint.id)
+                    waypoint_dict['position'] = str(waypoint.positio)
+                    waypoint_dict['dop'] = waypoint.dop
+                    waypoint_dict['altitude'] = waypoint.alltitude
+                    waypoint_dict['etat'] = waypoint.etat
+                    waypoint_dict['dateheure'] = waypoint.dateheure
+                    waypoint_dict['vitesse'] = waypoint.vitesse
+                    waypoint_dict['voiture'] = waypoint.voiture
+                    waypoint_dict['cap'] = waypoint.cap
+                    waypoint_dict['disponible'] = waypoint.disponible               
+                    waypoint_dict['geo_pos'] = str(waypoint.geo_pos)
+                    waypoint_dict['id_archive_local'] = waypoint.id_archive_local
+                    waypoint_dict['inputs'] = waypoint.inputs
+                    waypoint_dict['outputs'] = waypoint.outputs
+                    waypoint_dict['angle'] = waypoint.angle
+                    waypoint_dict['temperature'] = waypoint.temperature
+                    waypoint_dict['etat_porte'] = waypoint.etat_porte
+                    waypoint_dict['niveau_carburant'] = waypoint.niveau_carburant
+                    waypoint_dict['id_delegation'] = waypoint.id_delegation
+                    waypoint_dict['id_ville'] = waypoint.id_ville
+                    waypoint_dict['id_localite'] = waypoint.id_localite
+                    waypoint_dict['batterie'] = waypoint.batterie
+                    waypoint_dict['alimentation'] = waypoint.alimentation
+                    waypoint_dict['gps_valid'] = waypoint.gps_valid
+                    waypoint_dict['adresse_source'] = waypoint.adresse_source
+                    
+                    to_json.append(waypoint_dict)
+                
+                
+                
+                items=json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)
+                return HttpResponse(items, content_type='application/json')
+                
+                
+                
 
 def UserProRegistration(request):
         if request.user.is_authenticated():
