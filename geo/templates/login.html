@@ -132,12 +132,15 @@ function initialize() {
   {% for waypoint in waypoints %}
   var myLatlng = new google.maps.LatLng({{waypoint.geo_pos.y}},{{waypoint.geo_pos.x}})
   //CrÃ©ation du Marker
+  if  ("{{waypoint.angle}}" == "None" )  var angle = 0;
+  else var angle = {{waypoint.angle}};
       var myMarker = new google.maps.Marker({
-      	  icon:image+(Math.round({{waypoint.angle}}/45)*45)%360+'.png',
+      	  icon:image+(Math.round(angle/45)*45)%360+'.png',
           position: myLatlng,
           map: myMap,
           title: "{{waypoint.voiture}}"
       });
+  
   {% endfor %}
   initGrid();
 }

@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.template.loader import render_to_string
 from django.db import connection
 from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import simplejson as json
+import json
 from collections import OrderedDict
 from django.core import serializers
 
@@ -28,7 +28,7 @@ def index(request):
 #                 id_societe = request.GET.get('ids', None).encode('utf8')
                 
                 query_get_data_from_specific_view = 'SELECT * FROM v_'+id_provider+'_'+id_societe+'_'+id_connexion+' a1,'
-                query_get_data_from_specific_view +=' (SELECT voiture, max(dateheure) AS last_date FROM v_1_2_7 GROUP BY v_1_2_7.voiture) a2 '
+                query_get_data_from_specific_view +=' (SELECT voiture, max(dateheure) AS last_date FROM v_'+id_provider+'_'+id_societe+'_'+id_connexion+' GROUP BY v_'+id_provider+'_'+id_societe+'_'+id_connexion+'.voiture) a2 '
                 query_get_data_from_specific_view +='WHERE a1.voiture = a2.voiture '
                 query_get_data_from_specific_view +='AND a1.dateheure = a2.last_date'
                  
@@ -54,7 +54,7 @@ def json_get_latest_waypoint(request):
                 id_connexion=str(request.session.get('id_connexion'))
 
                 query_get_data_from_specific_view = 'SELECT * FROM v_'+id_provider+'_'+id_societe+'_'+id_connexion+' a1,'
-                query_get_data_from_specific_view +=' (SELECT voiture, max(dateheure) AS last_date FROM v_1_2_7 GROUP BY v_1_2_7.voiture) a2 '
+                query_get_data_from_specific_view +=' (SELECT voiture, max(dateheure) AS last_date FROM v_'+id_provider+'_'+id_societe+'_'+id_connexion+' GROUP BY v_'+id_provider+'_'+id_societe+'_'+id_connexion+'.voiture) a2 '
                 query_get_data_from_specific_view +='WHERE a1.voiture = a2.voiture '
                 query_get_data_from_specific_view +='AND a1.dateheure = a2.last_date'
                 to_json = []
@@ -83,7 +83,10 @@ def json_get_latest_waypoint(request):
                     waypoint_dict['id_archive_local'] = waypoint.id_archive_local
                     waypoint_dict['inputs'] = waypoint.inputs
                     waypoint_dict['outputs'] = waypoint.outputs
-                    waypoint_dict['angle'] = waypoint.angle
+                    if waypoint.angle is not None:
+                        waypoint_dict['angle'] = waypoint.angle
+                    else:
+                        waypoint_dict['angle'] = 0
                     waypoint_dict['temperature'] = waypoint.temperature
                     waypoint_dict['etat_porte'] = waypoint.etat_porte
                     waypoint_dict['niveau_carburant'] = waypoint.niveau_carburant
