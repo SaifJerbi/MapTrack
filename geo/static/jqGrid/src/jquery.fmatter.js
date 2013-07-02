@@ -33,12 +33,6 @@
 		isNumber : function(o) {
 			return typeof o === 'number' && isFinite(o);
 		},
-		isNull : function(o) {
-			return o === null;
-		},
-		isUndefined : function(o) {
-			return o === undefined;
-		},
 		isValue : function (o) {
 			return (this.isObject(o) || this.isString(o) || this.isNumber(o) || this.isBoolean(o));
 		},
@@ -119,140 +113,6 @@
 				
 			}
 			return nData;
-		},
-		// Tony Tomov
-		// PHP implementation. Sorry not all options are supported.
-		// Feel free to add them if you want
-		DateFormat : function (format, date, newformat, opts)  {
-			var	token = /\\.|[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/g,
-			timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-			timezoneClip = /[^-+\dA-Z]/g,
-			msDateRegExp = new RegExp("^\/Date\\((([-+])?[0-9]+)(([-+])([0-9]{2})([0-9]{2}))?\\)\/$"),
-			msMatch = ((typeof date === 'string') ? date.match(msDateRegExp): null),
-			pad = function (value, length) {
-				value = String(value);
-				length = parseInt(length,10) || 2;
-				while (value.length < length)  { value = '0' + value; }
-				return value;
-			},
-			ts = {m : 1, d : 1, y : 1970, h : 0, i : 0, s : 0, u:0},
-			timestamp=0, dM, k,hl,
-			dateFormat=["i18n"];
-			// Internationalization strings
-			dateFormat.i18n = {
-				dayNames: opts.dayNames,
-				monthNames: opts.monthNames
-			};
-			if( opts.masks.hasOwnProperty(format) ) { format = opts.masks[format]; }
-			if( !isNaN( date - 0 ) && String(format).toLowerCase() == "u") {
-				//Unix timestamp
-				timestamp = new Date( parseFloat(date)*1000 );
-			} else if(date.constructor === Date) {
-				timestamp = date;
-				// Microsoft date format support
-			} else if( msMatch !== null ) {
-				timestamp = new Date(parseInt(msMatch[1], 10));
-				if (msMatch[3]) {
-					var offset = Number(msMatch[5]) * 60 + Number(msMatch[6]);
-					offset *= ((msMatch[4] == '-') ? 1 : -1);
-					offset -= timestamp.getTimezoneOffset();
-					timestamp.setTime(Number(Number(timestamp) + (offset * 60 * 1000)));
-				}
-			} else {
-				date = String(date).split(/[\\\/:_;.,\t\T\s-]/);
-				format = format.split(/[\\\/:_;.,\t\T\s-]/);
-				// parsing for month names
-				for(k=0,hl=format.length;k<hl;k++){
-					if(format[k] == 'M') {
-						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
-						if(dM !== -1 && dM < 12){date[k] = dM+1;}
-					}
-					if(format[k] == 'F') {
-						dM = $.inArray(date[k],dateFormat.i18n.monthNames);
-						if(dM !== -1 && dM > 11){date[k] = dM+1-12;}
-					}
-					if(date[k]) {
-						ts[format[k].toLowerCase()] = parseInt(date[k],10);
-					}
-				}
-				if(ts.f) {ts.m = ts.f;}
-				if( ts.m === 0 && ts.y === 0 && ts.d === 0) {
-					return "&#160;" ;
-				}
-				ts.m = parseInt(ts.m,10)-1;
-				var ty = ts.y;
-				if (ty >= 70 && ty <= 99) {ts.y = 1900+ts.y;}
-				else if (ty >=0 && ty <=69) {ts.y= 2000+ts.y;}
-				timestamp = new Date(ts.y, ts.m, ts.d, ts.h, ts.i, ts.s, ts.u);
-			}
-			
-			if( opts.masks.hasOwnProperty(newformat) )  {
-				newformat = opts.masks[newformat];
-			} else if ( !newformat ) {
-				newformat = 'Y-m-d';
-			}
-			var 
-				G = timestamp.getHours(),
-				i = timestamp.getMinutes(),
-				j = timestamp.getDate(),
-				n = timestamp.getMonth() + 1,
-				o = timestamp.getTimezoneOffset(),
-				s = timestamp.getSeconds(),
-				u = timestamp.getMilliseconds(),
-				w = timestamp.getDay(),
-				Y = timestamp.getFullYear(),
-				N = (w + 6) % 7 + 1,
-				z = (new Date(Y, n - 1, j) - new Date(Y, 0, 1)) / 86400000,
-				flags = {
-					// Day
-					d: pad(j),
-					D: dateFormat.i18n.dayNames[w],
-					j: j,
-					l: dateFormat.i18n.dayNames[w + 7],
-					N: N,
-					S: opts.S(j),
-					//j < 11 || j > 13 ? ['st', 'nd', 'rd', 'th'][Math.min((j - 1) % 10, 3)] : 'th',
-					w: w,
-					z: z,
-					// Week
-					W: N < 5 ? Math.floor((z + N - 1) / 7) + 1 : Math.floor((z + N - 1) / 7) || ((new Date(Y - 1, 0, 1).getDay() + 6) % 7 < 4 ? 53 : 52),
-					// Month
-					F: dateFormat.i18n.monthNames[n - 1 + 12],
-					m: pad(n),
-					M: dateFormat.i18n.monthNames[n - 1],
-					n: n,
-					t: '?',
-					// Year
-					L: '?',
-					o: '?',
-					Y: Y,
-					y: String(Y).substring(2),
-					// Time
-					a: G < 12 ? opts.AmPm[0] : opts.AmPm[1],
-					A: G < 12 ? opts.AmPm[2] : opts.AmPm[3],
-					B: '?',
-					g: G % 12 || 12,
-					G: G,
-					h: pad(G % 12 || 12),
-					H: pad(G),
-					i: pad(i),
-					s: pad(s),
-					u: u,
-					// Timezone
-					e: '?',
-					I: '?',
-					O: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
-					P: '?',
-					T: (String(timestamp).match(timezone) || [""]).pop().replace(timezoneClip, ""),
-					Z: '?',
-					// Full Date/Time
-					c: '?',
-					r: '?',
-					U: Math.floor(timestamp / 1000)
-				};	
-			return newformat.replace(token, function ($0) {
-				return flags.hasOwnProperty($0) ? flags[$0] : $0.substring(1);
-			});			
 		}
 	};
 	$.fn.fmatter.defaultFormat = function(cellval, opts) {
@@ -266,20 +126,20 @@
 	};
 	$.fn.fmatter.checkbox =function(cval, opts) {
 		var op = $.extend({},opts.checkbox), ds;
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.disabled===true) {ds = "disabled=\"disabled\"";} else {ds="";}
-		if($.fmatter.isEmpty(cval) || $.fmatter.isUndefined(cval) ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
+		if($.fmatter.isEmpty(cval) || cval === undefined ) {cval = $.fn.fmatter.defaultFormat(cval,op);}
 		cval=String(cval);
 		cval=cval.toLowerCase();
-		var bchk = cval.search(/(false|0|no|n|off)/i)<0 ? " checked='checked' " : "";
+		var bchk = cval.search(/(false|f|0|no|n|off|undefined)/i)<0 ? " checked='checked' " : "";
 		return "<input type=\"checkbox\" " + bchk  + " value=\""+ cval+"\" offval=\"no\" "+ds+ "/>";
 	};
 	$.fn.fmatter.link = function(cellval, opts) {
 		var op = {target:opts.target};
 		var target = "";
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
@@ -291,7 +151,7 @@
 	$.fn.fmatter.showlink = function(cellval, opts) {
 		var op = {baseLinkUrl: opts.baseLinkUrl,showAction:opts.showAction, addParam: opts.addParam || "", target: opts.target, idName: opts.idName},
 		target = "", idUrl;
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if(op.target) {target = 'target=' + op.target;}
@@ -303,7 +163,7 @@
 	};
 	$.fn.fmatter.integer = function(cellval, opts) {
 		var op = $.extend({},opts.integer);
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -313,7 +173,7 @@
 	};
 	$.fn.fmatter.number = function (cellval, opts) {
 		var op = $.extend({},opts.number);
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -323,7 +183,7 @@
 	};
 	$.fn.fmatter.currency = function (cellval, opts) {
 		var op = $.extend({},opts.currency);
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
 		if($.fmatter.isEmpty(cellval)) {
@@ -333,14 +193,14 @@
 	};
 	$.fn.fmatter.date = function (cellval, opts, rwd, act) {
 		var op = $.extend({},opts.date);
-		if(opts.colModel !== undefined && !$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel !== undefined && opts.colModel.formatoptions !== undefined) {
 			op = $.extend({},op,opts.colModel.formatoptions);
 		}
-		if(!op.reformatAfterEdit && act=='edit'){
+		if(!op.reformatAfterEdit && act === 'edit'){
 			return $.fn.fmatter.defaultFormat(cellval, opts);
 		}
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.fmatter.util.DateFormat(op.srcformat,cellval,op.newformat,op);
+			return $.jgrid.parseDate(op.srcformat,cellval,op.newformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
@@ -348,11 +208,11 @@
 		// jqGrid specific
 		cellval = String(cellval);
 		var oSelect = false, ret=[], sep, delim;
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)){
+		if(opts.colModel.formatoptions !== undefined){
 			oSelect= opts.colModel.formatoptions.value;
 			sep = opts.colModel.formatoptions.separator === undefined ? ":" : opts.colModel.formatoptions.separator;
 			delim = opts.colModel.formatoptions.delimiter === undefined ? ";" : opts.colModel.formatoptions.delimiter;
-		} else if(!$.fmatter.isUndefined(opts.colModel.editoptions)){
+		} else if(opts.colModel.editoptions !== undefined){
 			oSelect= opts.colModel.editoptions.value;
 			sep = opts.colModel.editoptions.separator === undefined ? ":" : opts.colModel.editoptions.separator;
 			delim = opts.colModel.editoptions.delimiter === undefined ? ";" : opts.colModel.editoptions.delimiter;
@@ -374,7 +234,7 @@
 							ret[j] = sv[1];
 							j++;
 						}
-					} else if($.trim(sv[0])==$.trim(cellval)) {
+					} else if($.trim(sv[0]) === $.trim(cellval)) {
 						ret[0] = sv[1];
 						break;
 					}
@@ -395,12 +255,13 @@
 	};
 	$.fn.fmatter.rowactions = function(act) {
 		var $tr = $(this).closest("tr.jqgrow"),
-			$actionsDiv = $(this).parent(),
 			rid = $tr.attr("id"),
-			$grid = $(this).closest("table.ui-jqgrid-btable"),
+			$id = $(this).closest("table.ui-jqgrid-btable").attr('id').replace(/_frozen([^_]*)$/,'$1'),
+			$grid = $("#"+$id),
 			$t = $grid[0],
 			p = $t.p,
 			cm = p.colModel[$.jgrid.getCellIndex(this)],
+			$actionsDiv = cm.frozen ? $("tr#"+rid+" td:eq("+$.jgrid.getCellIndex(this)+") > div",$grid) :$(this).parent(),
 			op = {
 				keys: false,
 				onEdit: null, 
@@ -426,13 +287,13 @@
 				$actionsDiv.find("div.ui-inline-save,div.ui-inline-cancel").hide();
 			};
 
-		if (!$.fmatter.isUndefined(cm.formatoptions)) {
+		if (cm.formatoptions !== undefined) {
 			op = $.extend(op,cm.formatoptions);
 		}
-		if (!$.fmatter.isUndefined(p.editOptions)) {
+		if (p.editOptions !== undefined) {
 			op.editOptions = p.editOptions;
 		}
-		if (!$.fmatter.isUndefined(p.delOptions)) {
+		if (p.delOptions !== undefined) {
 			op.delOptions = p.delOptions;
 		}
 		if ($tr.hasClass("jqgrid-new-row")){
@@ -483,24 +344,24 @@
 	$.fn.fmatter.actions = function(cellval,opts) {
 		var op={keys:false, editbutton:true, delbutton:true, editformbutton: false},
 			rowid=opts.rowId, str="",ocl;
-		if(!$.fmatter.isUndefined(opts.colModel.formatoptions)) {
+		if(opts.colModel.formatoptions !== undefined) {
 			op = $.extend(op,opts.colModel.formatoptions);
 		}
 		if(rowid === undefined || $.fmatter.isEmpty(rowid)) {return "";}
 		if(op.editformbutton){
-			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'formedit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		} else if(op.editbutton){
-			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
+			ocl = "id='jEditButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'edit'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover') ";
 			str += "<div title='"+$.jgrid.nav.edittitle+"' style='float:left;cursor:pointer;' class='ui-pg-div ui-inline-edit' "+ocl+"><span class='ui-icon ui-icon-pencil'></span></div>";
 		}
 		if(op.delbutton) {
-			ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+			ocl = "id='jDeleteButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'del'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 			str += "<div title='"+$.jgrid.nav.deltitle+"' style='float:left;margin-left:5px;' class='ui-pg-div ui-inline-del' "+ocl+"><span class='ui-icon ui-icon-trash'></span></div>";
 		}
-		ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jSaveButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'save'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+$.jgrid.edit.bSubmit+"' style='float:left;display:none' class='ui-pg-div ui-inline-save' "+ocl+"><span class='ui-icon ui-icon-disk'></span></div>";
-		ocl = "onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
+		ocl = "id='jCancelButton_"+rowid+"' onclick=jQuery.fn.fmatter.rowactions.call(this,'cancel'); onmouseover=jQuery(this).addClass('ui-state-hover'); onmouseout=jQuery(this).removeClass('ui-state-hover'); ";
 		str += "<div title='"+$.jgrid.edit.bCancel+"' style='float:left;display:none;margin-left:5px;' class='ui-pg-div ui-inline-cancel' "+ocl+"><span class='ui-icon ui-icon-cancel'></span></div>";
 		return "<div style='margin-left:8px;'>" + str + "</div>";
 	};
@@ -512,7 +373,7 @@
 		unformatFunc = options.colModel.unformat||($.fn.fmatter[formatType] && $.fn.fmatter[formatType].unformat);
 		if(unformatFunc !== undefined && $.isFunction(unformatFunc) ) {
 			ret = unformatFunc.call(this, $(cellval).text(), options, cellval);
-		} else if(!$.fmatter.isUndefined(formatType) && $.fmatter.isString(formatType) ) {
+		} else if(formatType !== undefined && $.fmatter.isString(formatType) ) {
 			var opts = $.jgrid.formatter || {}, stripTag;
 			switch(formatType) {
 				case 'integer' :
@@ -561,7 +422,7 @@
 		var ret = [];
 		var cell = $(cellval).text();
 		if(cnt===true) {return cell;}
-		var op = $.extend({}, !$.fmatter.isUndefined(options.colModel.formatoptions) ? options.colModel.formatoptions: options.colModel.editoptions),
+		var op = $.extend({}, options.colModel.formatoptions !== undefined ? options.colModel.formatoptions: options.colModel.editoptions),
 		sep = op.separator === undefined ? ":" : op.separator,
 		delim = op.delimiter === undefined ? ";" : op.delimiter;
 		
@@ -582,7 +443,7 @@
 							ret[j] = sv[0];
 							j++;
 						}
-					} else if($.trim(sv[1])==$.trim(cell)) {
+					} else if($.trim(sv[1]) === $.trim(cell)) {
 						ret[0] = sv[0];
 						break;
 					}
@@ -592,7 +453,7 @@
 				ret = $.map(scell, function(n){
 					var rv;
 					$.each(oSelect, function(i,val){
-						if (val == n) {
+						if (val === n) {
 							rv = i;
 							return false;
 						}
@@ -606,11 +467,11 @@
 	};
 	$.unformat.date = function (cellval, opts) {
 		var op = $.jgrid.formatter.date || {};
-		if(!$.fmatter.isUndefined(opts.formatoptions)) {
+		if(opts.formatoptions !== undefined) {
 			op = $.extend({},op,opts.formatoptions);
 		}		
 		if(!$.fmatter.isEmpty(cellval)) {
-			return $.fmatter.util.DateFormat(op.newformat,cellval,op.srcformat,op);
+			return $.jgrid.parseDate(op.newformat,cellval,op.srcformat,op);
 		}
 		return $.fn.fmatter.defaultFormat(cellval, opts);
 	};
