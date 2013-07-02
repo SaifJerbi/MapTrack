@@ -1,23 +1,5 @@
 {% extends "index.html" %}
 
-{% block loginform %}
-{% if user.is_authenticated %}
-<p><a href="/logout/">Logout</a></p>			
-{% else %}
-			<form action="" method="post" class="form-inline">
-{% csrf_token %}
-{% if form.errors %}<p>Please correct the following fields:</p>{% endif %}
-		{% if form.societe.errors %}<p class="error">{{ form.societe.errors }}</p>{% endif %}
-        <label for="societe"{% if form.societe.errors %} class="error"{% endif %}>Societe:</label>        {{ form.societe }}
-        {% if form.username.errors %}<p class="error">{{ form.username.errors }}</p>{% endif %}
-        <label for="username"{% if form.username.errors %} class="error"{% endif %}>Username:</label>        {{ form.username }}
-        {% if form.password.errors %}<p class="error">{{ form.password.errors }}</p>{% endif %}
-        <label for="password"{% if form.password.errors %} class="error"{% endif %}>Password:</label>        {{ form.password }}
-<input type="submit" alt="register" value="Sign in"/>
-</form>{% endif %}
-{% endblock %}
-
-
 {% block track %}
 {% if user.is_authenticated %}
 <script>
@@ -126,8 +108,80 @@ if(mapwin) {
 {% endif %} 
 {% endblock %}
 
-{% block jquery %}
- 
+{% block map %}
+
+<script>
+
+  var map;
+function initialize() {
+  var image = '/static/icones/voiture/voiture_';
+  var myLatlng = new google.maps.LatLng({{zoom_point}});
+    
+    // Carte centrÃ©e sur le point, zoom 16
+    var myMapOptions = {
+        zoom: {{zoom}},
+        center: myLatlng,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+     
+    // CrÃ©ation de la carte
+    var myMap = new google.maps.Map(
+        document.getElementById('map'),
+        myMapOptions
+        );
+  {% for waypoint in waypoints %}
+  var myLatlng = new google.maps.LatLng({{waypoint.geo_pos.y}},{{waypoint.geo_pos.x}})
+  //CrÃ©ation du Marker
+      var myMarker = new google.maps.Marker({
+      	  icon:image+(Math.round({{waypoint.angle}}/45)*45)%360+'.png',
+          position: myLatlng,
+          map: myMap,
+          title: "{{waypoint.voiture}}"
+      });
+  {% endfor %}
+  initGrid();
+}
+</script>
+
 {% endblock %}
 
+{% block grid_script %}
+<script>
+
+function initGrid() {
+	$("#list2").jqGrid({
+   	url:'/json_get_latest_waypoint',
+	datatype: "json",
+	
+   	colNames:['Voiture','Vitesse','DateHeure'],
+   	colModel:[
+   		{name:'voiture',index:'voiture', width:100},
+   		{name:'vitesse',index:'vitesse', width:100},
+   		{name:'dateheure',index:'dateheure', width:100},
+   				
+   	],
+   	jsonReader:{
+   		root:"rows",
+   		total:"total",
+   		records:"records",
+   		repeatitems: false,
+   		id:"id"
+   		
+   	},
+   	height:"400",
+   	width:"300",
+   	rowNum:30,
+   	rowList:[10,20,30],
+   	pager: '#pager2',
+   	sortname: 'id',
+    viewrecords: true,
+    sortorder: "desc",
+    caption:"List des dernieres positions"
+});
+jQuery("#list2").jqGrid('navGrid','#pager2',{edit:false,add:false,del:false});
+
+            
+}
+</script>
+{% endblock %}
 

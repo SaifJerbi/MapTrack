@@ -69,7 +69,6 @@ def json_get_latest_waypoint(request):
                 for waypoint in items:
                     #waypoint_dict={}
                     waypoint_dict = OrderedDict()
-                    waypoint_dict['__class__'] = "Waypoint"
                     waypoint_dict['id'] = str(waypoint.id)
                     waypoint_dict['position'] = str(waypoint.positio)
                     waypoint_dict['dop'] = waypoint.dop
@@ -98,8 +97,8 @@ def json_get_latest_waypoint(request):
                     
                     to_json.append(waypoint_dict)
                 
-                root_name = 'waypoints' # or it can be queryset.model._meta.verbose_name_plural 
-                data = '{"total": %s, "%s": %s}' % (to_json.__len__(), root_name, json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)) 
+                root_name = 'rows' # or it can be queryset.model._meta.verbose_name_plural 
+                data = '{"page": "1",\n "total": %s,\n "records": "20",\n "%s": %s}' % (to_json.__len__(), root_name, json.dumps(to_json, cls=DjangoJSONEncoder,indent=4)) 
                 
                 #js = '{root:%s,count:%s}' % (serializers.serialize('json', to_json, use_natural_keys=True), to_json.count())
                 return HttpResponse(data, content_type='application/json')
@@ -192,19 +191,32 @@ def LoginRequest(request):
                                                         
                                                         #return HttpResponseRedirect('/index/')
                                     else:
-                                         return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+                                            form = LoginForm()
+                                            context = {'form': form}
+                                            return render_to_response('login_form.html', context, context_instance=RequestContext(request))
                                 else :
-                                    return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
-                                #return msg "username & password failed
+                                        form = LoginForm()
+                                        context = {'form': form}
+                                        return render_to_response('login_form.html', context, context_instance=RequestContext(request))
+                            else:
+                                    form = LoginForm()
+                                    context = {'form': form}
+                                    return render_to_response('login_form.html', context, context_instance=RequestContext(request))    #return msg "username & password failed
+                        else:
+                                form = LoginForm()
+                                context = {'form': form}
+                                return render_to_response('login_form.html', context, context_instance=RequestContext(request))
                             #return msg "societe does'nt existe        
                         #return msg "provider does'nt exist in data base    
                 else:
-                        return render_to_response('login.html', {'form': form}, context_instance=RequestContext(request))
+                        form = LoginForm()
+                        context = {'form': form}
+                        return render_to_response('login_form.html', context, context_instance=RequestContext(request))
         else:
                 ''' user is not submitting the form, show the login form '''
                 form = LoginForm()
                 context = {'form': form}
-                return render_to_response('login.html', context, context_instance=RequestContext(request))
+                return render_to_response('login_form.html', context, context_instance=RequestContext(request))
 
 def LogoutRequest(request):
         logout(request)

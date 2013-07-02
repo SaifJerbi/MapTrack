@@ -1,162 +1,128 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<!-- saved from url=(0054)http://twitter.github.io/bootstrap/examples/fluid.html -->
+<html lang="en">
 <head>
-<title>Protec GPSTracking</title>
-<meta charset="utf-8" />
-<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-<script type="text/javascript"
-	src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
-<script type="text/javascript" src="/static/js/Jquery/jquery.min.1.10.1.js"></script>
-<script type="text/javascript">
-		{% block jquery %}{% endblock %}
-</script>
-<script src="/static/js/Jquery/sidebar/jquery.sidr.js"></script>
-<link rel="stylesheet" href="/static/scss/jquery.sidr.dark.css">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<title>Protec MapTrack</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<!-- Le styles -->
 <link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
-<script type="text/javascript" src="/static/extjs/ext-all-debug.js"></script>
-<script type="text/javascript"	src="/static/extjs/adapter/ext/ext-base.js"></script>
-<link rel="stylesheet" type="text/css"	href="/static/extjs/resources/css/ext-all.css">
-<script src="/static/extjs/examples/ux/GMapPanel.js"></script>
-<script src="/static/loadtest.js"></script>
-<link rel="stylesheet" href="/static/main.css" type="text/css" />
-
-
-<script>
-
-
-// var map;
-// function initialize() {
-    
-//     // Carte centrÃ©e sur le point, zoom 16
-//     var myLatlng = new google.maps.LatLng(45.758796,4.834607);
-//     if("{{zoom_point}}" != "")
-//     {var myLatlng = new google.maps.LatLng({{zoom_point}});}
-    
-//     var zoom_v1 = 3;
-//     if("{{zoom}}" != "")
-// 	{zoom_v1 = "{{zoom}}";}
-//     var myMapOptions = {
-//         zoom: parseInt(zoom_v1),
-//         center: myLatlng,
-//         mapTypeId: google.maps.MapTypeId.ROADMAP
-//     };
-     
-//     // CrÃ©ation de la carte
-//     var myMap = new google.maps.Map(
-//         document.getElementById('map'),
-//         myMapOptions
-//         );
-       
-// 	{% for waypoint in waypoints %}
-// 	var myLatlng = new google.maps.LatLng({{waypoint.geo_pos.y}},{{waypoint.geo_pos.x}})
-// 	//CrÃ©ation du Marker
-// 	    var myMarker = new google.maps.Marker({
-// 	        position: myLatlng,
-// 	        map: myMap,
-// 	        title: "{{waypoint.voiture}}"
-// 	    });
-// 	{% endfor %}
-	
-// }
-</script>
-
-
-<!--[if IE]>
-		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-
-<!--[if lte IE 7]>
-		<script src="js/IE8.js" type="text/javascript"></script><![endif]-->
-
-<!--[if lt IE 7]>
-		<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
 <style type="text/css">
-#id_societe {
-	width: 100px;
-}
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
 
-#id_username {
-	width: 100px;
-}
+      @media (max-width: 980px) {
+        /* Enable use of floated navbar text */
+        .navbar-text.pull-right {
+          float: none;
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+      }
+      #map {width: 800px; height: 450px}
+    </style>
+<link href="/static/bootstrap/css/bootstrap-responsive.css"
+	rel="stylesheet">
 
-#id_password {
-	width: 100px;
-}
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+      <script src="../assets/js/html5shiv.js"></script>
+    <![endif]-->
 
-#map {
-	width: 100% px;
-	height: 700px
-}
-</style>
-{% block head %}{% endblock %}
+<!-- Fav and touch icons -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144"
+	href="http://twitter.github.io/bootstrap/assets/ico/apple-touch-icon-144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114"
+	href="http://twitter.github.io/bootstrap/assets/ico/apple-touch-icon-114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72"
+	href="http://twitter.github.io/bootstrap/assets/ico/apple-touch-icon-72-precomposed.png">
+<link rel="apple-touch-icon-precomposed"
+	href="http://twitter.github.io/bootstrap/assets/ico/apple-touch-icon-57-precomposed.png">
+<link rel="shortcut icon"
+	href="http://twitter.github.io/bootstrap/assets/ico/favicon.png">
+
+<script src="/static/js/Jquery/sidebar/jquery.min.1.10.1.js"></script>   
+<script src="/static/jqGrid/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="/static/jqGrid/js/i18n/grid.locale-en.js" type="text/javascript"></script>
+<script src="/static/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/static/jqGrid/css/ui.jqgrid.css" />
+
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+{% block map %}{% endblock %}
+{% block grid_script %}{% endblock %}
+
 </head>
 
-<body id="index" class="home" >
-{% block content %}{% endblock %}
+<body onload='initialize()'>
 
-	<aside id="featured" class="body">
-		<article>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Protec MapTrack</a>
+          <div class="nav-collapse collapse">
+			
+            <p class="navbar-text pull-right">
 			{% if user.is_authenticated %}
-			<p>Welcome, {{ user.username }}. Thanks for logging in.</p>
-			{% else %} {% endif %}{% block loginform %} {% endblock %}
+              Logged in as <a href="#" class="navbar-link">{{ user.username }} </a><a href="/logout/"> Logout</a>
+              {% endif %}
+            </p>
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
 
-		</article>
-	</aside>
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3" id="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Sidebar</li>
+              
+            </ul>
+					<table id="list2"></table>
+					<div id="pager2"></div>
+				</div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">
+          <div class="hero-unit" id="map">
+            <h1>MapTrack !</h1>
+            <p><br><br><br><br><br><br><br><br><br><br><br><br></p>
+            
+          </div>
+          
+        </div><!--/span-->
+      </div><!--/row-->
 
-		
-	<!-- /#featured -->
+      <hr>
 
-	<section id="content" class="body">
-		<div id=map></div>
-		{% block track%}{% endblock %}
-		
-		<div id='grid-example'></div>
+      <footer>
+        <p>© Company 2013</p>
+      </footer>
 
-		<!-- /#posts-list -->
+    </div><!--/.fluid-container-->
 
-	</section>
-	<!-- /#content -->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
 
-	<footer id="contentinfo" class="body">
-		<address id="about" class="vcard body">
-			<span class="primary"> <strong><a href="#"
-					class="fn url">Protec</a></strong> <span class="role">GPSTracking
-					Solution</span>
-			</span>
-			<!-- /.primary -->
 
-			<img src="/static/LOGO.gif" alt="Protec Logo" class="photo" /> <span
-				class="bio">Protec GIS Solution is a website that offers
-				User's cars tracking <br> Please contact us if you have any
-			</span>
-
-		</address>
-		<!-- /#about -->
-
-		<p>
-			&copy 2013 <a href="http://www.avl.tn">Protec</a>.
-		</p>
-		<div id="showdata"></div>
-	</footer>
-	<p id="cand"></p>
-<a id="simple-menu" href="#sidr">Toogle menu</a>
- 
-<div id="sidr">
-  <!-- Your content -->
-  <ul>
-    <li><a href="#">List 1</a></li>
-    <li class="active"><a href="#">List 2</a></li>
-    <li><a href="#">List 3</a></li>
-  </ul>
-</div>
- 
-<script>
-$(document).ready(function() {
-  $('#simple-menu').sidr();
-});
-</script>
-	<!-- /#contentinfo -->
-
-</body>
-</html>
+	
+</body></html>

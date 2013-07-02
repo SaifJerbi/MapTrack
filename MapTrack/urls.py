@@ -17,7 +17,7 @@ urlpatterns = patterns('',
     (r'^logout/$', 'geo.views.LogoutRequest'),
     (r'^login/$', 'geo.views.LoginRequest'),
     (r'^json_get_latest_waypoint','geo.views.json_get_latest_waypoint'),
-
+    
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

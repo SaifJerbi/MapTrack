@@ -1,0 +1,30 @@
+{% extends "login_page.html" %}
+{% block loginform %}
+<section class="loginform cf">
+<div style="margin-left: auto;margin-right: auto; ">
+		<form action="" method="post" class="form-horizontal">
+		{% csrf_token %}
+
+		<div class="control-group">
+			<label for="societe" class="control-label">Societe</label>
+			<div class="controls">{{ form.societe }}</div>
+		</div>
+		<div class="control-group">
+			<label for="username" class="control-label">Username</label>
+			<div class="controls">{{ form.username }}</div>
+		</div>
+		<div class="control-group">
+			<label for="username" class="control-label">Password</label>
+			<div class="controls">{{ form.password }}</div>
+		</div>
+		<div class="control-group">
+			<div class="controls"><input type="submit" class="btn" value="Login"></div>
+		</div>
+
+		
+		
+		</form>
+		</div>
+	</section>
+
+{% endblock %}

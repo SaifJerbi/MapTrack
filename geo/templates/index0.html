@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<title>Protec GPSTracking</title>
+<meta charset="utf-8" />
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script type="text/javascript"
+	src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+<script type="text/javascript" src="/static/js/Jquery/jquery.min.1.10.1.js"></script>
+<script type="text/javascript">
+		{% block jquery %}{% endblock %}
+</script>
+<script src="/static/js/Jquery/sidebar/jquery.sidr.js"></script>
+<link rel="stylesheet" href="/static/scss/jquery.sidr.dark.css">
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<link href="/static/bootstrap/css/bootstrap.css" rel="stylesheet">
+<script type="text/javascript" src="/static/extjs/ext-all-debug.js"></script>
+<script type="text/javascript"	src="/static/extjs/adapter/ext/ext-base.js"></script>
+<link rel="stylesheet" type="text/css"	href="/static/extjs/resources/css/ext-all.css">
+<script src="/static/extjs/examples/ux/GMapPanel.js"></script>
+<script src="/static/loadtest.js"></script>
+<link rel="stylesheet" href="/static/main.css" type="text/css" />
+
+
+<script>
+
+
+// var map;
+// function initialize() {
+    
+//     // Carte centrÃ©e sur le point, zoom 16
+//     var myLatlng = new google.maps.LatLng(45.758796,4.834607);
+//     if("{{zoom_point}}" != "")
+//     {var myLatlng = new google.maps.LatLng({{zoom_point}});}
+    
+//     var zoom_v1 = 3;
+//     if("{{zoom}}" != "")
+// 	{zoom_v1 = "{{zoom}}";}
+//     var myMapOptions = {
+//         zoom: parseInt(zoom_v1),
+//         center: myLatlng,
+//         mapTypeId: google.maps.MapTypeId.ROADMAP
+//     };
+     
+//     // CrÃ©ation de la carte
+//     var myMap = new google.maps.Map(
+//         document.getElementById('map'),
+//         myMapOptions
+//         );
+       
+// 	{% for waypoint in waypoints %}
+// 	var myLatlng = new google.maps.LatLng({{waypoint.geo_pos.y}},{{waypoint.geo_pos.x}})
+// 	//CrÃ©ation du Marker
+// 	    var myMarker = new google.maps.Marker({
+// 	        position: myLatlng,
+// 	        map: myMap,
+// 	        title: "{{waypoint.voiture}}"
+// 	    });
+// 	{% endfor %}
+	
+// }
+</script>
+
+
+<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+
+<!--[if lte IE 7]>
+		<script src="js/IE8.js" type="text/javascript"></script><![endif]-->
+
+<!--[if lt IE 7]>
+		<link rel="stylesheet" type="text/css" media="all" href="css/ie6.css"/><![endif]-->
+<style type="text/css">
+#id_societe {
+	width: 100px;
+}
+
+#id_username {
+	width: 100px;
+}
+
+#id_password {
+	width: 100px;
+}
+
+#map {
+	width: 100% px;
+	height: 700px
+}
+</style>
+{% block head %}{% endblock %}
+</head>
+
+<body id="index" class="home" >
+{% block content %}{% endblock %}
+
+	<aside id="featured" class="body">
+		<article>
+			{% if user.is_authenticated %}
+			<p>Welcome, {{ user.username }}. Thanks for logging in.</p>
+			{% else %} {% endif %}{% block loginform %} {% endblock %}
+
+		</article>
+	</aside>
+
+		
+	<!-- /#featured -->
+
+	<section id="content" class="body">
+		<div id=map></div>
+		{% block track%}{% endblock %}
+		
+		<div id='grid-example'></div>
+
+		<!-- /#posts-list -->
+
+	</section>
+	<!-- /#content -->
+
+	<footer id="contentinfo" class="body">
+		<address id="about" class="vcard body">
+			<span class="primary"> <strong><a href="#"
+					class="fn url">Protec</a></strong> <span class="role">GPSTracking
+					Solution</span>
+			</span>
+			<!-- /.primary -->
+
+			<img src="/static/LOGO.gif" alt="Protec Logo" class="photo" /> <span
+				class="bio">Protec GIS Solution is a website that offers
+				User's cars tracking <br> Please contact us if you have any
+			</span>
+
+		</address>
+		<!-- /#about -->
+
+		<p>
+			&copy 2013 <a href="http://www.avl.tn">Protec</a>.
+		</p>
+		<div id="showdata"></div>
+	</footer>
+	<p id="cand"></p>
+<a id="simple-menu" href="#sidr">Toogle menu</a>
+ 
+<div id="sidr">
+  <!-- Your content -->
+  <ul>
+    <li><a href="#">List 1</a></li>
+    <li class="active"><a href="#">List 2</a></li>
+    <li><a href="#">List 3</a></li>
+  </ul>
+</div>
+ 
+<script>
+$(document).ready(function() {
+  $('#simple-menu').sidr();
+});
+</script>
+	<!-- /#contentinfo -->
+
+</body>
+</html>
